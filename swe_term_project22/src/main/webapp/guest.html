@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+ <title>
+  Guest Page
+ </title>
+ <link rel="stylesheet" href="./guest.css">
+ <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+</head>
+
+<body>
+ <table>
+  <tr>
+   <td>
+    <form onsubmit="event.preventDefault();SubmitForm();" autocomplete="off">
+     <div>
+      <label>Hotel*</label><label class="validation-error hide" id="hotelCheck">Hotel cannot be left empty</label>
+      <input type="text" name="hotel_id" id="hotel_id">
+     </div>
+     <div>
+      <label>Room Number*</label><label class="validation-error hide" id="roomCheck">Room number cannot be left empty</label>
+      <input type="text" name="room_num" id="room_num">
+     </div>
+     <div>
+      <label>Floor Number*</label><label class="validation-error hide" id="floorCheck">Floor number cannot be left empty</label>
+      <input type="text" name="floor_num" id="floor_num">
+     </div>
+     <div>
+      <label>Check In*</label><label class="validation-error hide" id="check_in_Check">Check in date cannot be left empty</label>
+      <input type="text" name="check_in" id="check_in">
+     </div>
+     <div>
+      <label>Check Out*</label><label class="validation-error hide" id="check_out_Check">Check out date cannot be left empty</label>
+      <input type="text" name="check_out" id="check_out">
+     </div>
+     <div class="form-action-buttons">
+      <input type="submit" value="Submit">
+     </div>
+    </form>
+   </td>
+   <td>
+    <table class="list" id="employeeList">
+     <thead>
+      <tr>
+       <th>Email</th>
+       <th>Hotel</th>
+       <th>Room Number</th>
+       <th>Floor Number</th>
+       <th>Check In</th>
+       <th>Check Out</th>
+       <th></th>
+      </tr>
+     </thead>
+     <tbody>
+
+     </tbody>
+    </table>
+   </td>
+  </tr>
+ </table>
+ <script>
+
+ var currentRow = null
+
+ function SubmitForm() {
+   if(Check()){
+   var currentForm = RowsRead();
+   if (currentRow == null)
+	   addBooking();
+   else
+    	RowsUpdate();
+   resetForm();
+   }
+ }
+
+ function RowsRead() {
+  var currentForm = {};
+  currentForm["hotelID"] = document.getElementById("hotel_id").value;
+  currentForm["roomNumber"] = document.getElementById("room_num").value;
+  currentForm["floorNumber"] = document.getElementById("floor_num").value;
+  currentForm["checkInDate"] = document.getElementById("check_in").value;
+  currentForm["checkOutDate"] = document.getElementById("check_out").value;
+  
+  return currentForm;
+ }
+
+ function AddRow(data) {
+  var table = document.getElementById("employeeList"). getElementsByTagName('tbody')[0]; //!! тут не reservation должен быть как ID?
+  var newRow = table.insertRow(table.length);
+  cell1 = newRow.insertCell(0);
+  cell1.innerHTML = data.guestEmail;
+  cell2 = newRow.insertCell(1);
+  cell2.innerHTML = data.hotelID;
+  cell3 = newRow.insertCell(2);
+  cell3.innerHTML = data.roomNumber;
+  cell4 = newRow.insertCell(3);
+  cell4.innerHTML = data.floorNumber;
+  cell5 = newRow.insertCell(4);
+  cell5.innerHTML = data.checkInDate;
+  cell6 = newRow.insertCell(5);
+  cell6.innerHTML = data.checkOutDate;
+  cell6 = newRow.insertCell(6);
+  cell6.innerHTML = `<a onClick="EditButt(this)">Edit</a>
+                       <a onClick="DeleteButt(this)">Delete</a>`;
+ }
+
+ function resetForm() {
+  document.getElementById("hotel_id").value = "";
+  document.getElementById("room_num").value = "";
+  document.getElementById("floor_num").value = "";
+  document.getElementById("check_in").value = "";
+  document.getElementById("check_out").value = "";
+  currentRow = null;
+ }
+
+ function EditButt(data) {
+  currentRow = data.parentElement.parentElement;
+  document.getElementById("hotel_id").value = currentRow.cells[1].innerHTML;
+  document.getElementById("room_num").value = currentRow.cells[2].innerHTML;
+  document.getElementById("floor_num").value = currentRow.cells[3].innerHTML;
+  document.getElementById("check_in").value = currentRow.cells[4].innerHTML;
+  document.getElementById("check_out").value = currentRow.cells[5].innerHTML;
+ }
+ 
+ 
+ function RowsUpdate(currentForm) {
+  currentRow.cells[1].innerHTML = currentForm.hotelID;
+  currentRow.cells[2].innerHTML = currentForm.roomNumber;
+  currentRow.cells[3].innerHTML = currentForm.floorNumber;
+  currentRow.cells[4].innerHTML= currentForm.checkInDate;
+  currentRow.cells[5].innerHTML= currentForm.checkOutDate;
+ }
+
+ function DeleteButt(data) {
+  if (confirm('Are you sure to delete this record ?')) {
+   row = data.parentElement.parentElement;
+   document.getElementById("employeeList").deleteRow(row.rowIndex);
+   resetForm();
+  }
+ }
+
+ function Check() {
+    check_input2 = true;
+    if (document.getElementById("hotel_id").value == "") {
+      check_input2 = false;
+      document.getElementById("hotelCheck").classList.remove("hide");
+    } else {
+      check_input2 = true;
+      if (!document.getElementById("hotelCheck").classList.contains("hide"))
+        document.getElementById("hotelCheck").classList.add("hide");
+    }
+
+    check_input3 = true;
+    if (document.getElementById("room_num").value == "") {
+      check_input3 = false;
+      document.getElementById("roomCheck").classList.remove("hide");
+    } else {
+      check_input3 = true;
+      if (!document.getElementById("roomCheck").classList.contains("hide"))
+        document.getElementById("roomCheck").classList.add("hide");
+    }
+
+    check_input4 = true;
+    if (document.getElementById("floor_num").value == "") {
+      check_input4 = false;
+      document.getElementById("floorCheck").classList.remove("hide");
+    } else {
+      check_input4 = true;
+      if (!document.getElementById("floorCheck").classList.contains("hide"))
+        document.getElementById("floorCheck").classList.add("hide");
+    }
+
+    check_input5 = true;
+    if (document.getElementById("check_in").value == "") {
+      check_input5 = false;
+      document.getElementById("check_in_Check").classList.remove("hide");
+    } else {
+      check_input5 = true;
+      if (!document.getElementById("check_in_Check").classList.contains("hide"))
+        document.getElementById("check_in_Check").classList.add("hide");
+    }
+
+    check_input6 = true;
+    if (document.getElementById("check_out").value == "") {
+      check_input6 = false;
+      document.getElementById("check_out_Check").classList.remove("hide");
+    } else {
+      check_input6 = true;
+      if (!document.getElementById("check_out_Check").classList.contains("hide"))
+        document.getElementById("check_out_Check").classList.add("hide");
+    }
+    check_input = true;
+    if ( check_input2 == false || check_input3 == false || check_input4 == false || check_input5 == false || check_input6 == false) {
+      check_input = false
+    }
+    return check_input;
+  }
+ $(document).ready(getList);
+ 
+ function getList() {
+	 var table = document.getElementById("employeeList").getElementsByTagName('tbody')[0];
+	while (table.rows.length > 0)
+		table.deleteRow(0);
+	$.ajax({
+		url: 'services/guest',
+		type: 'GET',
+		datatype: 'json',
+		data: {'method': 'getBookings' },
+		success: function (r) {
+			var ls = JSON.parse(r);
+			ls.forEach(function (x) {
+				AddRow(x);	
+			});
+			
+			//console.log(JSON.parse(r));
+		}
+	});
+ }
+ 
+ function addBooking() {
+	 var currentForm = RowsRead();
+	 $.ajax({
+			url: 'services/guest',
+			type: 'GET',
+			datatype: 'json',
+			data: {
+				'method': 'makeBooking',
+				'hotelID': currentForm.hotelID,
+				'roomNumber': currentForm.roomNumber,
+				'floorNumber': currentForm.floorNumber,
+				'checkInDate': currentForm.checkInDate,
+				'checkOutDate': currentForm.checkOutDate
+			},
+			success: function (r) {
+				getList();
+				//console.log(JSON.parse(r));
+			}
+	});
+ }
+ 
+function RowsUpdate() {
+	var currentForm = RowsRead();
+	
+	$.ajax({
+		url: 'services/guest',
+		type: 'GET',
+		datatype: 'json',
+		data: {
+			'method': 'modifyBooking', //!!!!ТУТ БЫЛО MODIFYBOOKING не совсем понял на какую функцию оно отсылалось. Пока заменил
+      //на RowsUpdate
+			'hotelID': currentForm.hotelID,
+			'roomNumber': currentForm.roomNumber,
+			'floorNumber': currentForm.floorNumber,
+			'checkInDate': currentForm.checkInDate,
+			'checkOutDate': currentForm.checkOutDate,
+			'old_hotelID': currentRow.cells[1].innerHTML,
+			'old_roomNumber': currentRow.cells[2].innerHTML,
+			'old_floorNumber': currentRow.cells[3].innerHTML,
+			'old_checkInDate': currentRow.cells[4].innerHTML,
+			'old_checkOutDate': currentRow.cells[5].innerHTML
+		},
+		success: function (r) {
+			getList();
+			//console.log(JSON.parse(r));
+		}
+	})
+}
+ </script>
+</body>
+
+</html>

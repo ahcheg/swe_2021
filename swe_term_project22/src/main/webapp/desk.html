@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+ <title>Desk Page</title>
+ <link rel="stylesheet" href="./desk.css">
+ <meta charset="windows-1252">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+</head>
+<body>
+ <div class="container">
+  <div class="tab tab-1">
+   <table id="table" border="1">
+    <tr>
+     <th>Guest email</th>
+     <th>Hotel</th>
+     <th>Room Number</th>
+     <th>Floor Number</th>
+     <th>Check In</th>
+     <th>Check Out</th>
+    </tr>
+    <tr>
+
+    </tr>
+   </table>
+  </div>
+  <div class="tab tab-2">
+   Guest email :<input type="email" name="guest_email" id="guest_email" min="0" max="100">
+   Hotel :<input type="text" name="hotel_id" id="hotel_id">
+   Room Number :<input type="room_number" name="room_number" id="room_number">
+   Floor Number :<input type="floor_number" name="floor_number" id="floor_number">
+   Check In :<input type="Check_in" name="Check_in" id="Check_in">
+   Check Out :<input type="Check_out" name="Check_out" id="Check_out">
+   <button onclick="RowNew();">Add</button>
+   <button onclick="RowEdit();">Edit</button>
+   <button onclick="RowDelete();">Remove</button>
+  <button onclick="location.href='clean.html'" type="button">
+    Cleaning</button>
+  </div>
+  </div>
+ </div>
+ <script>
+
+
+
+
+
+
+
+
+
+  var Index = null,
+   table = document.getElementById("table");
+  function InputCheck() {
+   var CheckEmpty = false,
+    guest_email = document.getElementById("guest_email").value,
+    hotel_id = document.getElementById("hotel_id").value,
+    room_number = document.getElementById("room_number").value,
+    floor_number = document.getElementById("floor_number").value,
+    Check_in = document.getElementById("Check_in").value,
+    Check_out = document.getElementById("Check_out").value;
+
+
+//Cheks for empty input
+   if (guest_email === "") {
+    alert("EMAIL IS  EMPTY");
+    CheckEmpty = true;
+   } else if (hotel_id === "") {
+    alert("HOTEL ID IS EMPTY");
+    CheckEmpty = true;
+   } else if (room_number === "") {
+    alert("ROOM NUMBER IS EMPTY");
+    CheckEmpty = true;
+   } else if (floor_number===""){
+    alert("FLOOR NUMBER IS EMPTY")
+    CheckEmpty=true;
+   } else if (Check_in === "") {
+    alert("CHECK IN  IS EMPTY")
+    CheckEmpty = true;
+   } else if (Check_out === "") {
+    alert("CHECK OUT IS EMPTY")
+    CheckEmpty = true;
+   }
+   return CheckEmpty;
+  }
+
+
+//NEW ROW
+  function RowNew(x) {
+	if (InputCheck())
+		return;
+	  $.ajax({
+			url: 'services/clerk',
+			type: 'GET',
+			datatype: 'json',
+			data: {
+				'method': 'addBooking', //Ð‘Ñ‹Ð»Ð¾ addBooking Ð¿Ð¾Ð¼ÐµÐ½Ñ�Ð» Ð½Ð° RowNew
+				'guestEmail': document.getElementById("guest_email").value,
+				'hotelID': document.getElementById("hotel_id").value,
+				'roomNumber': document.getElementById("room_number").value,
+				'floorNumber': document.getElementById("floor_number").value,
+				'checkInDate': document.getElementById("Check_in").value,
+				'checkOutDate': document.getElementById("Check_out").value
+			},
+			success: function (r) {
+				getList();
+				//console.log(JSON.parse(r));
+			}
+	});
+	
+  }
+  function insertNewRecord(x) {
+	  var newRow = table.insertRow(table.length),
+	     cell1 = newRow.insertCell(0),
+	     cell2 = newRow.insertCell(1),
+	     cell3 = newRow.insertCell(2),
+	     cell4=newRow.insertCell(3),
+	     cell5 = newRow.insertCell(4),
+	     cell6 = newRow.insertCell(5);
+
+	    cell1.innerHTML = x.guestEmail;
+	    cell2.innerHTML = x.hotelID;
+	    cell3.innerHTML = x.roomNumber;
+	    cell4.innerHTML= x.floorNumber;
+	    cell5.innerHTML= x.checkInDate;
+	    cell6.innerHTML= x.checkOutDate;
+	    RowForInput();
+  }
+
+
+
+  // SHOW DATA IN THE NEW INPUT TEXT
+  //EMPTY BECAUSE ON REFRESH THE DATA GET DELETED
+  function RowForInput() {
+
+   for (var i = 1; i < table.rows.length; i++) {
+    table.rows[i].onclick = function () {
+     Index = this.rowIndex;
+     document.getElementById("guest_email").value = this.cells[0].innerHTML;
+     document.getElementById("hotel_id").value = this.cells[1].innerHTML;
+     document.getElementById("room_number").value = this.cells[2].innerHTML;
+     document.getElementById("floor_number").value=this.cells[3].innerHTML;
+     document.getElementById("Check_in").value = this.cells[4].innerHTML;
+     document.getElementById("Check_out").value = this.cells[5].innerHTML;
+    };
+   }
+  }
+  RowForInput();
+  $(document).ready(getList);
+  
+  function getList() {
+	  while (table.rows.length > 1) {
+		  table.deleteRow(1);
+	  }
+ 	$.ajax({
+ 		url: 'services/clerk',
+ 		type: 'GET',
+ 		datatype: 'json',
+ 		data: {'method': 'getBookings' },
+ 		success: function (r) {
+ 			var ls = JSON.parse(r);
+ 			
+ 			ls.forEach(function (x) {
+ 				insertNewRecord(x);	
+ 			});
+ 			
+ 			//console.log(JSON.parse(r));
+ 		}
+ 	});
+  }
+  
+  
+ function RowEdit() {
+ 	if (InputCheck() || Index == null)
+ 		return;
+ 	$.ajax({
+ 		url: 'services/clerk',
+ 		type: 'GET',
+ 		datatype: 'json',
+ 		data: {
+ 			'method': 'modifyBooking', // !!! Ð¢Ð�ÐšÐ–Ð• ÐŸÐžÐœÐ•Ð�Ð¯Ð› Ð�Ð�Ð—Ð’Ð�Ð�Ð˜Ð• 
+ 			'guestEmail': document.getElementById("guest_email").value,
+ 			'hotelID': document.getElementById("hotel_id").value,
+ 			'roomNumber': document.getElementById("room_number").value,
+ 			'floorNumber': document.getElementById("floor_number").value,
+ 			'checkInDate': document.getElementById("Check_in").value,
+ 			'checkOutDate': document.getElementById("Check_out").value,
+ 			'old_guestEmail' : table.rows[Index].cells[0].innerHTML,
+ 			'old_hotelID': table.rows[Index].cells[1].innerHTML,
+ 			'old_roomNumber': table.rows[Index].cells[2].innerHTML,
+ 			'old_floorNumber': table.rows[Index].cells[3].innerHTML,
+ 			'old_checkInDate': table.rows[Index].cells[4].innerHTML,
+ 			'old_checkOutDate': table.rows[Index].cells[5].innerHTML
+ 		},
+ 		success: function (r) {
+ 			getList();
+ 			//console.log(JSON.parse(r));
+ 		}
+ 	})
+ }
+ function RowDelete() {
+	 	if (Index == null)
+	 		return;
+	 	$.ajax({
+	 		url: 'services/clerk',
+	 		type: 'GET',
+	 		datatype: 'json',
+	 		data: {
+	 			'method': 'cancelBooking',
+	 			'guestEmail' : table.rows[Index].cells[0].innerHTML,
+	 			'hotelID': table.rows[Index].cells[1].innerHTML,
+	 			'roomNumber': table.rows[Index].cells[2].innerHTML,
+	 			'floorNumber': table.rows[Index].cells[3].innerHTML,
+	 			'checkInDate': table.rows[Index].cells[4].innerHTML,
+	 			'checkOutDate': table.rows[Index].cells[5].innerHTML
+	 		},
+	 		success: function (r) {
+	 			getList();
+	 			//console.log(JSON.parse(r));
+	 		}
+	 	})
+	 }
+ </script>
+
+</body>
+
+</html>

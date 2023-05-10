@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <title>Login page</title>
+ <link rel="stylesheet" href="./login.css">
+ <meta charset="UTF-8">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Document</title>
+ 
+</head>
+<body>
+
+ 
+<div class="login">
+ <h1>Login</h1>
+ <form action="#" method="post"><p>Username</p>
+ <input type="text" id="user" name="user" placeholder="Username">
+ <p>Password</p>
+ <input type="password" id="password" name="password" placeholder="Password">
+ 
+ <div id="link"><button type="button" id="login" onClick="clickButton()">Check</button></div>
+ </form>
+</div>
+
+</form>
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script type="text/javascript">
+	guests = []
+	desk = []
+	managers = []
+
+	function clickButton() {
+ var el1 = document.getElementById("user").value;
+ var el2 = document.getElementById("password").value;
+ var found = false;
+ guests.forEach(function (pair1) {
+ if(pair1.email===el1 && found==false){
+  if(pair1.password===el2){
+	 
+   console.log("GUESTS");
+   found = true;
+   document.getElementById("link").innerHTML = '<button type="button" onClick="sendInfoG()">Login</button>'
+  }else{
+   alert("WRONG PASSWORD");
+   found = true;
+  }
+ }
+})
+ desk.forEach(function (pair2) {
+  if (pair2.email === el1 && found == false) {
+   if (pair2.password === el2) {
+    console.log("DESK");
+    found = true;
+   document.getElementById("link").innerHTML = '<button type="button" onClick="sendInfoD()">Login</button>'
+   } else {
+    alert("WRONG PASSWORD");
+    found = true;
+   }
+  }
+ })
+
+ managers.forEach(function (pair3) {
+  if (pair3.email === el1 && found == false) {
+   if (pair3.password === el2) {
+   
+    found = true;
+    document.getElementById("link").innerHTML = '<button type="button" onClick="sendInfoM()">Login</button>'
+    
+   } else {
+    alert("WRONG PASSWORD");
+    found = true;
+   }
+  }
+ })
+	if (found == false)
+		alert("No such user");
+}
+	
+function sendInfoG() {
+	$.ajax({
+		url: 'services/guest',
+		type: 'GET',
+		datatype: 'json',
+		data: {'method': 'saveUser', 'userEmail': document.getElementById("user").value},
+		success: function (r) {
+			//alert(JSON.parse(r));
+		}
+	});
+	window.location.href = "guest.html";
+}
+
+function sendInfoD() {
+	$.ajax({
+		url: 'services/desk',
+		type: 'GET',
+		datatype: 'json',
+		data: {'method': 'saveUser', 'userEmail': document.getElementById("user").value},
+		success: function (r) {
+			//alert(JSON.parse(r));
+		}
+	});
+	window.location.href = "desk.html";
+}
+
+function sendInfoM() {
+	$.ajax({
+		url: 'services/manager',
+		type: 'GET',
+		datatype: 'json',
+		data: {'method': 'saveUser', 'userEmail': document.getElementById("user").value},
+		success: function (r) {
+			//alert(JSON.parse(r));
+		}
+	});
+	window.location.href = "manager.html";
+}
+
+$(document).ready(function() {
+		$.ajax({
+			url: 'services/user',
+			type: 'GET',
+			datatype: 'json',
+			data: {'method': 'getUsers'},
+			success: function (r) {
+				getData(JSON.parse(r));
+			}
+		});
+});
+  
+function getData(arr) {
+	arr.forEach((x) => {
+		var user = {
+			"email": x.username,
+			"password": x.password
+		};
+		if (x.type == 'G')
+			guests.push(user);
+		else if (x.type == 'D')
+			desk.push(user);
+		else
+			managers.push(user);
+	})
+}
+
+// function loginFunc(){
+//  console.log("Inside function: "+ document.getElementById("user").value+ "  ||  "+ document.getElementById("password").value);
+//  var el1=document.getElementById("user").value;
+//  var el2=document.getElementById("password").value ;
+//  var href = window.location.href;
+//  var dir = href.substring(0, href.lastIndexOf('/')) + "/";
+//  var found=false;
+//  console.log("Path: "+dir)
+// guests.forEach(function(pair1){
+//  if(pair1.email===el1 && found==false){
+//   if(pair1.password===el2){
+//    console.log("GUESTS");
+//    found = true;
+//    //window.location.replace("./guest.html");
+//   }else{
+//    console.log("WRONG PASSWORD");
+//    found = true;
+//   }
+//  }
+// })
+
+//  desk.forEach(function (pair2) {
+//   if (pair2.email === el1 && found == false) {
+//    if (pair2.password === el2) {
+//     console.log("DESK");
+//     found = true;
+//    // window.location.replace("./desk.html");
+//    } else {
+//     console.log("WRONG PASSWORD");
+//     found = true;
+//    }
+//   }
+//  })
+ 
+//  managers.forEach(function (pair3) {
+//   if (pair3.email === el1 && found == false) {
+//    if (pair3.password === el2) {
+//     var link= dir + "manager.html"
+//     console.log("MANAGERS: "+dir+"manager.html");
+//     found = true;
+//     console.log(link);
+//     window.location.href=link;
+//    } else {
+//     console.log("WRONG PASSWORD");
+//     found = true;
+//    }
+//   }
+//  })
+
+
+ // if(guests.hasOwnProperty(key)){
+ //  console.log("GUESTS");
+ //  //window.location.replace("./guest.html");
+ // }else if(desk.hasOwnProperty(key)){
+ //   console.log("DESK");
+ //   //window.location.replace("./desk.html");
+  
+ // }else if (managers.hasOwnProperty(key)) {
+ //  console.log("MANAGERS");
+ //  // window.location.replace("./manager.html");
+  
+ // }
+//  console.log("END");
+// }
+
+</script>
+
+</body>
+</html>

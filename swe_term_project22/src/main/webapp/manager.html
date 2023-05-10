@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+ <title>Manager Page</title>
+ <link rel="stylesheet" href="./manager.css">
+ <meta charset="windows-1252">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+
+ 
+
+</head>
+
+<body>
+
+ <div class="container">
+  <div class="tab tab-1">
+   <table id="table" border="1">
+    <tr>
+     <th>ID</th>
+     <th>Hotel</th>
+     <th>Working days per week</th>
+    <th>Payroll</th>
+    </tr>
+    <tr>
+     
+    </tr>
+   </table>
+  </div>
+  <div class="tab tab-2">
+   Emplyee ID :<input type="number" name="employee_id" id="employee_id" min="0" max="100">
+   Hotel :<input type="text" name="hotel_id" id="hotel_id">
+   Working days per week :<input type="number" name="work_days" id="work_days">
+  Payroll :<input type="number" name="payroll" id="payroll">
+
+   <button onclick="addEmployee();">Add</button>
+   <button onclick="RowEdit();">Edit</button>
+   <button onclick="RowRemove();">Remove</button>
+  </div>
+ </div>
+
+ <script>
+
+  var Index_Row = null,
+   table = document.getElementById("table");
+
+  // check the empty input
+  function InputCheck() {
+   var CheckEmpty = false,
+    employee_id = document.getElementById("employee_id").value,
+    hotel_id = document.getElementById("hotel_id").value,
+    work_days = document.getElementById("work_days").value;
+
+   if (employee_id === "") {
+    alert("ID IS EMPTY");
+    CheckEmpty = true;
+   }
+   else if (hotel_id === "") {
+    alert("HOTEL ID IS EMPTY");
+    CheckEmpty = true;
+   }
+   else if (work_days === "") {
+    alert("WORK DAYS ARE EMPTY");
+    CheckEmpty = true;
+   }
+   return CheckEmpty;
+  }
+
+//NEW ROW
+  function RowAdd(x) {
+
+       //CREATES AND FILLS TH ENEW CELLS
+    var newRow = table.insertRow(table.length),
+     cell1 = newRow.insertCell(0),
+     cell2 = newRow.insertCell(1),
+     cell3 = newRow.insertCell(2),
+     cell4 = newRow.insertCell(3)
+     /*
+     employee_id = document.getElementById("employee_id").value
+     hotel_id = document.getElementById("hotel_id").value,
+     work_days = document.getElementById("work_days").value;
+*/
+    cell1.innerHTML = x.employeeID;
+    cell2.innerHTML = x.hotelID;
+    cell3.innerHTML = x.workDays;
+    cell4.innerHTML = x.payroll;
+    RowForInput();
+  }
+
+  // display selected row data into input text
+  //EMPTY BECAUSE ON REFRESH THE DATA GET DELETED
+  function RowForInput() {
+
+   for (var i = 1; i < table.rows.length; i++) {
+    table.rows[i].onclick = function () {
+     // get the seected row index
+     Index_Row = this.rowIndex;
+     document.getElementById("employee_id").value = this.cells[0].innerHTML;
+     document.getElementById("hotel_id").value = this.cells[1].innerHTML;
+     document.getElementById("work_days").value = this.cells[2].innerHTML;
+     document.getElementById("payroll").value = this.cells[3].innerHTML;
+    };
+   }
+  }
+  RowForInput();
+
+  function RowEdit() { //!!! Ð�Ð£Ð–Ð�Ðž Ð‘Ð£Ð”Ð•Ð¢ Ð”ÐžÐ‘Ð�Ð’Ð˜Ð¢Ð¬ Payroll (salary in table)
+	  if (InputCheck() || Index_Row == null)
+	 		return;
+	 	$.ajax({
+	 		url: 'services/manager',
+	 		type: 'GET',
+	 		datatype: 'json',
+	 		data: {
+	 			'method': 'editEmployee',
+	 			'employeeID': table.rows[Index_Row].cells[0].innerHTML,
+	 			'hotelID': table.rows[Index_Row].cells[1].innerHTML,
+	 			'workDays': table.rows[Index_Row].cells[2].innerHTML,
+	 			'payroll': table.rows[Index_Row].cells[3].innerHTML
+	 		},
+	 		success: function (r) {
+	 			getList();
+	 			//console.log(JSON.parse(r));
+	 		}
+	 	})
+  }
+ function RowRemove() {
+	 	if (Index_Row == null)
+	 		return;
+	 	$.ajax({
+	 		url: 'services/manager',
+	 		type: 'GET',
+	 		datatype: 'json',
+	 		data: {
+	 			'method': 'deleteEmployee', //!!!Ð‘Ñ‹Ð»Ð¾ deleteEmployee Ñ�Ñ‚Ð°Ð»Ð¾  RowRemove
+	 			'employeeID' : table.rows[Index_Row].cells[0].innerHTML,
+	 			'hotelID': table.rows[Index_Row].cells[1].innerHTML
+	 		},
+	 		success: function (r) {
+	 			getList();
+	 			//console.log(JSON.parse(r));
+	 		}
+	 	})
+	 }
+$(document).ready(getList);
+  
+  function getList() {
+	  while (table.rows.length > 1) {
+		  table.deleteRow(1);
+	  }
+ 	$.ajax({
+ 		url: 'services/manager',
+ 		type: 'GET',
+ 		datatype: 'json',
+ 		data: {'method': 'getEmployees' },
+ 		success: function (r) {
+ 			var ls = JSON.parse(r);
+ 			
+ 			ls.forEach(function (x) {
+ 				RowAdd(x);	
+ 			});
+ 			
+ 			//console.log(JSON.parse(r));
+ 		}
+ 	});
+  }
+  function addEmployee() {
+	  if (InputCheck())
+			return;
+		  $.ajax({
+				url: 'services/manager',
+				type: 'GET',
+				datatype: 'json',
+				data: {
+					'method': 'addEmployee',// !!! Ð‘Ñ‹Ð»Ð¾ addEmployee Ð¿Ð¾Ð¼ÐµÐ½Ñ�Ð» RowAdd
+					'employeeID': document.getElementById("employee_id").value,
+					'hotelID': document.getElementById("hotel_id").value,
+					'workDays': document.getElementById("work_days").value,
+					'payroll': document.getElementById("payroll").value
+				},
+				success: function (r) {
+					getList();
+					//console.log(JSON.parse(r));
+				}
+		});
+  }
+ </script>
+
+</body>
+
+</html>

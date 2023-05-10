@@ -1,0 +1,73 @@
+* {
+  padding: 0;
+  margin: 0;
+  font-family: sans-serif;
+  color: white;
+  font-size: 20px;
+}
+body {
+  width: 100%;
+  height: 100vh;
+  background-image: url(./images/pexels-cottonbro-6466488.jpg);
+  background-size: cover;
+  background-position: center;
+}
+input {
+  color: black;
+}
+.container {
+  overflow: hidden;
+}
+
+.tab {
+  float: left;
+}
+
+.tab-2 {
+  margin-left: 50px;
+}
+
+.tab-2 input {
+  display: block;
+  margin-bottom: 10px;
+}
+
+tr {
+  transition: all 0.25s ease-in-out;
+}
+
+tr:hover {
+  background-color: #eee;
+  cursor: pointer;
+}
+button {
+  width: 200px;
+  padding: 15px 0;
+  text-align: center;
+  margin: 20px 10px;
+  border-radius: 25px;
+  font-weight: bold;
+  border: 2px solid #009688;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+span {
+  background: #009688;
+  height: 100%;
+  width: 0;
+  border-radius: 25px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  transition: 0.5s;
+}
+button:hover span {
+  width: 100%;
+}
+button:hover {
+  border: none;
+}
